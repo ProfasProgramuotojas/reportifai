@@ -13,6 +13,20 @@ import {
 import { AlertTriangle, Minus, Plus, ShoppingCart, X } from "lucide-react";
 import { useState } from "react";
 
+// Extend JSX to include custom elevenlabs-convai element
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      'elevenlabs-convai': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & {
+          'agent-id'?: string;
+        },
+        HTMLElement
+      >;
+    }
+  }
+}
+
 interface Product {
   id: number;
   name: string;
@@ -74,6 +88,9 @@ export default function TestShop() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [showCart, setShowCart] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
+  const [showVoiceBugReport, setShowVoiceBugReport] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const agentId = process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID;
 
   const addToCart = (product: Product) => {
     setCart((prevCart) => {
@@ -111,12 +128,39 @@ export default function TestShop() {
     return cart.reduce((total, item) => total + item.quantity, 0);
   };
 
-  const handlePurchase = () => {
+  const handlePurchase = async () => {
     if (cart.length === 0) {
       alert("Your cart is empty!");
       return;
     }
-    setShowErrorModal(true);
+    
+    try {
+      // Attempt to process payment - this will cause a real error
+      const response = await fetch('/api/process-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          items: cart,
+          total: getTotalPrice()
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      // Success handling would go here
+    } catch (error) {
+      console.error('Payment error:', error);
+      setErrorMessage(error instanceof Error ? error.message : 'Unknown error occurred');
+      setShowErrorModal(true);
+    }
+  };
+
+  const handleErrorClose = () => {
+    setShowErrorModal(false);
+    setTimeout(() => setShowVoiceBugReport(true), 300);
   };
 
   return (
@@ -315,26 +359,71 @@ export default function TestShop() {
             <DialogDescription className="text-center space-y-4 pt-4">
               <div className="p-6 bg-white/5 backdrop-blur-md rounded-xl border border-amber-500/30">
                 <p className="text-lg font-semibold text-white mb-2">
-                  Error 418: I&apos;m a Teapot
+                  Payment Processing Failed
                 </p>
-                <p className="text-gray-300 leading-relaxed">
-                  Our payment processor is currently brewing the perfect
-                  transaction experience. The server refuses to brew coffee
-                  because it is, permanently, a teapot.
+                <p className="text-gray-300 leading-relaxed mb-4">
+                  We encountered an error while processing your payment.
                 </p>
+                <div className="bg-red-500/10 border border-red-500/30 rounded p-3">
+                  <p className="text-sm font-mono text-red-400">
+                    {errorMessage}
+                  </p>
+                </div>
                 <p className="text-sm text-amber-400 mt-4">
-                  Please try again in 3-5 minutes, or contact our barista... we
-                  mean support team.
+                  Please report this issue so our team can fix it.
                 </p>
               </div>
               <Button
-                onClick={() => setShowErrorModal(false)}
+                onClick={handleErrorClose}
                 className="w-full bg-gradient-to-r from-amber-500 to-yellow-600 text-gray-900 hover:opacity-90 transition-opacity font-bold"
               >
-                Got it, I&apos;ll wait for my coffee
+                Report the Issue
               </Button>
             </DialogDescription>
           </DialogHeader>
+        </DialogContent>
+      </Dialog>
+
+      {/* Voice Bug Report Dialog */}
+      <Dialog open={showVoiceBugReport} onOpenChange={setShowVoiceBugReport}>
+        <DialogContent className="sm:max-w-2xl bg-gradient-to-br from-gray-900 via-purple-950 to-gray-900 border-2 border-purple-500/30 text-white">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
+              🎙️ Report Bug via Voice
+            </DialogTitle>
+            <DialogDescription className="text-gray-300">
+              Talk to our AI assistant about the error you encountered.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="mt-4">
+            <div className="mb-4 p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg text-sm">
+              <p className="text-amber-400 font-semibold mb-1">Error Context:</p>
+              <p className="text-gray-300 text-xs font-mono">{errorMessage}</p>
+              <p className="text-gray-400 text-xs mt-1">Occurred during payment processing</p>
+            </div>
+
+            <div className="bg-gray-900/80 rounded-lg p-6 min-h-[300px] flex items-center justify-center">
+              {agentId ? (
+                <elevenlabs-convai agent-id={agentId}></elevenlabs-convai>
+              ) : (
+                <div className="text-center text-gray-400">
+                  <div className="text-4xl mb-2">⚠️</div>
+                  <p className="text-sm">Missing NEXT_PUBLIC_ELEVENLABS_AGENT_ID</p>
+                  <p className="text-xs mt-2">Check your .env.local file</p>
+                </div>
+              )}
+            </div>
+
+            <div className="mt-4 text-xs text-gray-400">
+              <p className="mb-2">💡 <strong>Tips:</strong></p>
+              <ul className="list-disc list-inside space-y-1 ml-2">
+                <li>Describe what you were trying to do</li>
+                <li>Explain what happened instead</li>
+                <li>Mention the error message you saw</li>
+              </ul>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

@@ -31,6 +31,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <script src="https://elevenlabs.io/convai-widget/index.js" async type="text/javascript"></script>
+      </head>
       <body className={inter.className}>{children}</body>
     </html>
   );
