@@ -1,13 +1,13 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { Bug } from "lucide-react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { Button } from "@/components/ui/button";
+import { Bug } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export function Navbar() {
-  const pathname = usePathname()
-  const isTestRoute = pathname === '/test'
+  const pathname = usePathname();
+  const isTestRoute = pathname === "/test";
 
   return (
     <nav className="container mx-auto px-6 py-6">
@@ -28,11 +28,16 @@ export function Navbar() {
               </Button>
             </Link>
           )}
-          <Button className="bg-gradient-to-r from-violet-500 to-red-500 text-white hover:opacity-90 transition-opacity">
-            Get Started
+          <Button
+            variant={"outline"}
+            className="border-2 h-12 border-transparent bg-gradient-to-r from-red-500 to-violet-500 bg-clip-padding opacity-80 relative before:absolute before:inset-0 before:bg-gray-900 before:m-[2px] before:rounded-[calc(0.5rem-2px)] before:-z-10"
+          >
+            <span className="bg-gradient-to-r from-red-400 to-violet-400 bg-clip-text text-transparent">
+              Watch Demo
+            </span>
           </Button>
         </div>
       </div>
     </nav>
-  )
+  );
 }
