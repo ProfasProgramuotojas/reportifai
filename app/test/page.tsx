@@ -1,17 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { Navbar } from "@/components/navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog";
-import { Navbar } from "@/components/navbar";
-import { ShoppingCart, Plus, Minus, X, AlertTriangle } from "lucide-react";
+import { AlertTriangle, Minus, Plus, ShoppingCart, X } from "lucide-react";
+import { useState } from "react";
 
 interface Product {
   id: number;
@@ -30,48 +30,42 @@ const products: Product[] = [
     id: 1,
     name: "Elegant Tea Set",
     price: 299,
-    image:
-      "https://images.pexels.com/photos/1350560/pexels-photo-1350560.jpeg?auto=compress&cs=tinysrgb&w=600",
+    image: "/test_images/gettyimages-523278966-1024x1024.jpg",
     description: "Handcrafted porcelain tea set with gold accents",
   },
   {
     id: 2,
-    name: "Luxury Dinner Plates",
+    name: "Luxury Dinner Plate",
     price: 189,
-    image:
-      "https://images.pexels.com/photos/6270876/pexels-photo-6270876.jpeg?auto=compress&cs=tinysrgb&w=600",
-    description: "Set of 6 fine porcelain dinner plates",
+    image: "/test_images/gettyimages-184933994-1024x1024.jpg",
+    description: "A single fine porcelain dinner plate",
   },
   {
     id: 3,
     name: "Decorative Vase",
     price: 149,
-    image:
-      "https://images.pexels.com/photos/1030914/pexels-photo-1030914.jpeg?auto=compress&cs=tinysrgb&w=600",
-    description: "Classic white porcelain vase with silver trim",
+    image: "/test_images/funny-upcycled-pottery-24.jpeg",
+    description: "A vase for every place",
   },
   {
     id: 4,
-    name: "Coffee Cup Set",
+    name: "Coffee Cup Set*",
     price: 129,
-    image:
-      "https://images.pexels.com/photos/1350556/pexels-photo-1350556.jpeg?auto=compress&cs=tinysrgb&w=600",
-    description: "Premium porcelain coffee cups with gold rim",
+    image: "/test_images/gettyimages-83311821-1024x1024.jpg",
+    description: "*Contemporary coffee cup set",
   },
   {
     id: 5,
     name: "Serving Bowl",
     price: 179,
-    image:
-      "https://images.pexels.com/photos/5824488/pexels-photo-5824488.jpeg?auto=compress&cs=tinysrgb&w=600",
+    image: "/test_images/gettyimages-464487535-1024x1024.jpg",
     description: "Large decorative serving bowl",
   },
   {
     id: 6,
     name: "Porcelain Figurine",
     price: 249,
-    image:
-      "https://images.pexels.com/photos/6457579/pexels-photo-6457579.jpeg?auto=compress&cs=tinysrgb&w=600",
+    image: "/test_images/sallymeekinsceramics.jpg",
     description: "Handcrafted decorative porcelain figurine",
   },
 ];
