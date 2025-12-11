@@ -1,21 +1,28 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Navbar } from "@/components/navbar"
-import { ShoppingCart, Plus, Minus, X } from "lucide-react"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Navbar } from "@/components/navbar";
+import { ShoppingCart, Plus, Minus, X, AlertTriangle } from "lucide-react";
 
 interface Product {
-  id: number
-  name: string
-  price: number
-  image: string
-  description: string
+  id: number;
+  name: string;
+  price: number;
+  image: string;
+  description: string;
 }
 
 interface CartItem extends Product {
-  quantity: number
+  quantity: number;
 }
 
 const products: Product[] = [
@@ -23,97 +30,100 @@ const products: Product[] = [
     id: 1,
     name: "Elegant Tea Set",
     price: 299,
-    image: "https://images.pexels.com/photos/1350560/pexels-photo-1350560.jpeg?auto=compress&cs=tinysrgb&w=600",
-    description: "Handcrafted porcelain tea set with gold accents"
+    image:
+      "https://images.pexels.com/photos/1350560/pexels-photo-1350560.jpeg?auto=compress&cs=tinysrgb&w=600",
+    description: "Handcrafted porcelain tea set with gold accents",
   },
   {
     id: 2,
     name: "Luxury Dinner Plates",
     price: 189,
-    image: "https://images.pexels.com/photos/6270876/pexels-photo-6270876.jpeg?auto=compress&cs=tinysrgb&w=600",
-    description: "Set of 6 fine porcelain dinner plates"
+    image:
+      "https://images.pexels.com/photos/6270876/pexels-photo-6270876.jpeg?auto=compress&cs=tinysrgb&w=600",
+    description: "Set of 6 fine porcelain dinner plates",
   },
   {
     id: 3,
     name: "Decorative Vase",
     price: 149,
-    image: "https://images.pexels.com/photos/1030914/pexels-photo-1030914.jpeg?auto=compress&cs=tinysrgb&w=600",
-    description: "Classic white porcelain vase with silver trim"
+    image:
+      "https://images.pexels.com/photos/1030914/pexels-photo-1030914.jpeg?auto=compress&cs=tinysrgb&w=600",
+    description: "Classic white porcelain vase with silver trim",
   },
   {
     id: 4,
     name: "Coffee Cup Set",
     price: 129,
-    image: "https://images.pexels.com/photos/1350556/pexels-photo-1350556.jpeg?auto=compress&cs=tinysrgb&w=600",
-    description: "Premium porcelain coffee cups with gold rim"
+    image:
+      "https://images.pexels.com/photos/1350556/pexels-photo-1350556.jpeg?auto=compress&cs=tinysrgb&w=600",
+    description: "Premium porcelain coffee cups with gold rim",
   },
   {
     id: 5,
     name: "Serving Bowl",
     price: 179,
-    image: "https://images.pexels.com/photos/5824488/pexels-photo-5824488.jpeg?auto=compress&cs=tinysrgb&w=600",
-    description: "Large decorative serving bowl"
+    image:
+      "https://images.pexels.com/photos/5824488/pexels-photo-5824488.jpeg?auto=compress&cs=tinysrgb&w=600",
+    description: "Large decorative serving bowl",
   },
   {
     id: 6,
     name: "Porcelain Figurine",
     price: 249,
-    image: "https://images.pexels.com/photos/6457579/pexels-photo-6457579.jpeg?auto=compress&cs=tinysrgb&w=600",
-    description: "Handcrafted decorative porcelain figurine"
-  }
-]
+    image:
+      "https://images.pexels.com/photos/6457579/pexels-photo-6457579.jpeg?auto=compress&cs=tinysrgb&w=600",
+    description: "Handcrafted decorative porcelain figurine",
+  },
+];
 
 export default function TestShop() {
-  const [cart, setCart] = useState<CartItem[]>([])
-  const [showCart, setShowCart] = useState(false)
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [showCart, setShowCart] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
 
   const addToCart = (product: Product) => {
-    setCart(prevCart => {
-      const existingItem = prevCart.find(item => item.id === product.id)
+    setCart((prevCart) => {
+      const existingItem = prevCart.find((item) => item.id === product.id);
       if (existingItem) {
-        return prevCart.map(item =>
+        return prevCart.map((item) =>
           item.id === product.id
             ? { ...item, quantity: item.quantity + 1 }
             : item
-        )
+        );
       }
-      return [...prevCart, { ...product, quantity: 1 }]
-    })
-  }
+      return [...prevCart, { ...product, quantity: 1 }];
+    });
+  };
 
   const updateQuantity = (id: number, change: number) => {
-    setCart(prevCart =>
+    setCart((prevCart) =>
       prevCart
-        .map(item =>
-          item.id === id
-            ? { ...item, quantity: item.quantity + change }
-            : item
+        .map((item) =>
+          item.id === id ? { ...item, quantity: item.quantity + change } : item
         )
-        .filter(item => item.quantity > 0)
-    )
-  }
+        .filter((item) => item.quantity > 0)
+    );
+  };
 
   const removeFromCart = (id: number) => {
-    setCart(prevCart => prevCart.filter(item => item.id !== id))
-  }
+    setCart((prevCart) => prevCart.filter((item) => item.id !== id));
+  };
 
   const getTotalPrice = () => {
-    return cart.reduce((total, item) => total + item.price * item.quantity, 0)
-  }
+    return cart.reduce((total, item) => total + item.price * item.quantity, 0);
+  };
 
   const getTotalItems = () => {
-    return cart.reduce((total, item) => total + item.quantity, 0)
-  }
+    return cart.reduce((total, item) => total + item.quantity, 0);
+  };
 
   const handlePurchase = () => {
     if (cart.length === 0) {
-      alert("Your cart is empty!")
-      return
+      alert("Your cart is empty!");
+      return;
     }
-    alert(`Purchase successful! Total: $${getTotalPrice()}\n\nThank you for shopping with us!`)
-    setCart([])
-    setShowCart(false)
-  }
+    setShowErrorModal(true);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-amber-950 to-gray-900">
@@ -136,10 +146,13 @@ export default function TestShop() {
       </div>
 
       {showCart && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40" onClick={() => setShowCart(false)}>
+        <div
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+          onClick={() => setShowCart(false)}
+        >
           <div
             className="fixed right-0 top-0 h-full w-full max-w-md bg-gradient-to-b from-gray-900 to-gray-800 shadow-2xl overflow-y-auto"
-            onClick={e => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
           >
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
@@ -157,11 +170,16 @@ export default function TestShop() {
               </div>
 
               {cart.length === 0 ? (
-                <p className="text-gray-400 text-center py-8">Your cart is empty</p>
+                <p className="text-gray-400 text-center py-8">
+                  Your cart is empty
+                </p>
               ) : (
                 <div className="space-y-4">
-                  {cart.map(item => (
-                    <div key={item.id} className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-amber-500/30">
+                  {cart.map((item) => (
+                    <div
+                      key={item.id}
+                      className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-amber-500/30"
+                    >
                       <div className="flex gap-4">
                         <img
                           src={item.image}
@@ -169,8 +187,12 @@ export default function TestShop() {
                           className="w-20 h-20 object-cover rounded-lg"
                         />
                         <div className="flex-1">
-                          <h3 className="font-semibold text-white mb-1">{item.name}</h3>
-                          <p className="text-amber-400 font-bold">${item.price}</p>
+                          <h3 className="font-semibold text-white mb-1">
+                            {item.name}
+                          </h3>
+                          <p className="text-amber-400 font-bold">
+                            ${item.price}
+                          </p>
                           <div className="flex items-center gap-2 mt-2">
                             <Button
                               size="icon"
@@ -180,7 +202,9 @@ export default function TestShop() {
                             >
                               <Minus className="w-3 h-3" />
                             </Button>
-                            <span className="text-white font-medium w-8 text-center">{item.quantity}</span>
+                            <span className="text-white font-medium w-8 text-center">
+                              {item.quantity}
+                            </span>
                             <Button
                               size="icon"
                               variant="outline"
@@ -232,12 +256,13 @@ export default function TestShop() {
             Luxury Porcelain Collection
           </h1>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-            Discover our exquisite collection of handcrafted porcelain pieces with elegant gold and silver accents
+            Discover our exquisite collection of handcrafted porcelain pieces
+            with elegant gold and silver accents
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-          {products.map(product => (
+          {products.map((product) => (
             <Card
               key={product.id}
               className="border border-amber-500/30 bg-white/5 backdrop-blur-md hover:bg-white/10 transition-all hover:-translate-y-1 overflow-hidden"
@@ -251,8 +276,12 @@ export default function TestShop() {
               </div>
               <CardContent className="p-6 space-y-4">
                 <div>
-                  <h3 className="text-2xl font-bold text-white mb-2">{product.name}</h3>
-                  <p className="text-gray-300 text-sm leading-relaxed">{product.description}</p>
+                  <h3 className="text-2xl font-bold text-white mb-2">
+                    {product.name}
+                  </h3>
+                  <p className="text-gray-300 text-sm leading-relaxed">
+                    {product.description}
+                  </p>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-3xl font-bold text-transparent bg-gradient-to-r from-amber-400 to-yellow-500 bg-clip-text">
@@ -277,6 +306,43 @@ export default function TestShop() {
           <p>&copy; 2024 Luxury Porcelain Collection. All rights reserved.</p>
         </div>
       </footer>
+
+      <Dialog open={showErrorModal} onOpenChange={setShowErrorModal}>
+        <DialogContent className="sm:max-w-md bg-gradient-to-br from-gray-900 via-amber-950 to-gray-900 border-2 border-amber-500/30 text-white">
+          <DialogHeader>
+            <div className="mx-auto mb-4">
+              <div className="w-20 h-20 bg-gradient-to-br from-amber-500 to-yellow-600 rounded-full flex items-center justify-center animate-pulse">
+                <AlertTriangle className="w-10 h-10 text-gray-900" />
+              </div>
+            </div>
+            <DialogTitle className="text-2xl font-bold text-center bg-gradient-to-r from-amber-400 to-yellow-500 bg-clip-text text-transparent">
+              Error Detected
+            </DialogTitle>
+            <DialogDescription className="text-center space-y-4 pt-4">
+              <div className="p-6 bg-white/5 backdrop-blur-md rounded-xl border border-amber-500/30">
+                <p className="text-lg font-semibold text-white mb-2">
+                  Error 418: I&apos;m a Teapot
+                </p>
+                <p className="text-gray-300 leading-relaxed">
+                  Our payment processor is currently brewing the perfect
+                  transaction experience. The server refuses to brew coffee
+                  because it is, permanently, a teapot.
+                </p>
+                <p className="text-sm text-amber-400 mt-4">
+                  Please try again in 3-5 minutes, or contact our barista... we
+                  mean support team.
+                </p>
+              </div>
+              <Button
+                onClick={() => setShowErrorModal(false)}
+                className="w-full bg-gradient-to-r from-amber-500 to-yellow-600 text-gray-900 hover:opacity-90 transition-opacity font-bold"
+              >
+                Got it, I&apos;ll wait for my coffee
+              </Button>
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
     </div>
-  )
+  );
 }
